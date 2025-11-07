@@ -5,19 +5,19 @@ from .routes import api_bp
 
 def create_app():
     """
-    Factory function para crear la aplicación Flask
-    Patrón de diseño Factory para mejor testing y configuración
+    Funcion factory para crear la aplicacion Flask.
+    Se utiliza el patron de diseno Factory para mejorar testing y configuracion.
     """
     app = Flask(__name__)
     
-    # Configuración
-    app.config['JSON_SORT_KEYS'] = False  # Mantener orden de JSON
-    app.config['DEBUG'] = True  # Cambiar a False en producción
+    # Configuracion general
+    app.config['JSON_SORT_KEYS'] = False  # Mantener el orden original en respuestas JSON
+    app.config['DEBUG'] = True  # Cambiar a False en produccion
     
     # Habilitar CORS para todos los dominios
     CORS(app)
     
-    # Registrar Blueprints (módulos de rutas)
+    # Registrar Blueprints (modulos de rutas)
     app.register_blueprint(api_bp, url_prefix='/api')
     
     # ============================================
@@ -26,7 +26,7 @@ def create_app():
     @app.route('/')
     def home():
         return jsonify({
-            "message": "🌳 Tree Detection API",
+            "message": "Tree Detection API",
             "version": "1.0",
             "status": "running",
             "endpoints": {
@@ -36,7 +36,7 @@ def create_app():
         })
     
     # ============================================
-    # MANEJO DE ERRORES GLOBALES
+    # MANEJADORES DE ERRORES GLOBALES
     # ============================================
     @app.errorhandler(404)
     def not_found(error):
@@ -49,14 +49,14 @@ def create_app():
     def internal_error(error):
         return jsonify({
             "success": False,
-            "error": "Error interno del servidor"
+            "error": "Error interno del servidor."
         }), 500
     
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
             "success": False,
-            "error": "Solicitud incorrecta"
+            "error": "Solicitud incorrecta."
         }), 400
     
     return app

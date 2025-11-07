@@ -12,7 +12,7 @@ db = DatabaseManager()
 
 @api_bp.route('/species', methods=['GET'])
 def get_species():
-    """GET /api/species - Retorna todas las especies"""
+    """GET /api/species - Retorna todas las especies."""
     try:
         species = db.species.get_all_species()
         return jsonify({
@@ -26,22 +26,23 @@ def get_species():
             "error": str(e)
         }), 500
 
+
 # ============================================
-# ENDPOINTS DE ÁRBOLES
+# ENDPOINTS DE ARBOLES
 # ============================================
 
 @api_bp.route('/trees', methods=['GET'])
 def get_trees():
-    """GET /api/trees?page=1&per_page=50 - Retorna árboles con paginación"""
+    """GET /api/trees?page=1&per_page=50 - Retorna arboles con paginacion."""
     try:
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 50, type=int)
         
-        # Validar parámetros
+        # Validar parametros
         if page < 1 or per_page < 1 or per_page > 100:
             return jsonify({
                 "success": False,
-                "error": "Parámetros inválidos: page >= 1, 1 <= per_page <= 100"
+                "error": "Parametros invalidos: page >= 1, 1 <= per_page <= 100"
             }), 400
         
         result = db.trees.get_trees_paginated(page=page, per_page=per_page)
@@ -62,9 +63,10 @@ def get_trees():
             "error": str(e)
         }), 500
 
+
 @api_bp.route('/trees/<int:tree_id>', methods=['GET'])
 def get_tree_by_id(tree_id):
-    """GET /api/trees/{id} - Retorna un árbol específico"""
+    """GET /api/trees/{id} - Retorna un arbol especifico por ID."""
     try:
         tree = db.trees.get_tree_by_id(tree_id)
         
@@ -76,7 +78,7 @@ def get_tree_by_id(tree_id):
         else:
             return jsonify({
                 "success": False,
-                "error": f"Árbol con ID {tree_id} no encontrado"
+                "error": f"Arbol con ID {tree_id} no encontrado."
             }), 404
     
     except Exception as e:
@@ -85,18 +87,19 @@ def get_tree_by_id(tree_id):
             "error": str(e)
         }), 500
 
+
 @api_bp.route('/trees/species/<int:species_id>', methods=['GET'])
 def get_trees_by_species(species_id):
-    """GET /api/trees/species/{id} - Retorna árboles de una especie"""
+    """GET /api/trees/species/{id} - Retorna arboles de una especie."""
     try:
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 50, type=int)
         
-        # Validar parámetros
+        # Validar parametros
         if page < 1 or per_page < 1 or per_page > 100:
             return jsonify({
                 "success": False,
-                "error": "Parámetros inválidos: page >= 1, 1 <= per_page <= 100"
+                "error": "Parametros invalidos: page >= 1, 1 <= per_page <= 100"
             }), 400
         
         result = db.trees.get_trees_by_species(species_id, page=page, per_page=per_page)
@@ -118,11 +121,12 @@ def get_trees_by_species(species_id):
             "error": str(e)
         }), 500
 
+
 @api_bp.route('/trees/area', methods=['GET'])
 def get_trees_in_area():
     """
     GET /api/trees/area?lat_min=9.93&lat_max=9.94&lon_min=-84.09&lon_max=-84.08
-    Retorna árboles en un área GPS específica
+    Retorna los arboles dentro de un area geografica especifica.
     """
     try:
         lat_min = request.args.get('lat_min', type=float)
@@ -130,18 +134,18 @@ def get_trees_in_area():
         lon_min = request.args.get('lon_min', type=float)
         lon_max = request.args.get('lon_max', type=float)
         
-        # Validar parámetros requeridos
+        # Validar parametros requeridos
         if not all([lat_min, lat_max, lon_min, lon_max]):
             return jsonify({
                 "success": False,
-                "error": "Parámetros requeridos: lat_min, lat_max, lon_min, lon_max"
+                "error": "Parametros requeridos: lat_min, lat_max, lon_min, lon_max"
             }), 400
         
-        # Validar rangos lógicos
+        # Validar rangos logicos
         if lat_min >= lat_max or lon_min >= lon_max:
             return jsonify({
                 "success": False,
-                "error": "Rangos inválidos: lat_min < lat_max y lon_min < lon_max"
+                "error": "Rangos invalidos: lat_min < lat_max y lon_min < lon_max"
             }), 400
         
         trees = db.trees.get_trees_in_area(lat_min, lat_max, lon_min, lon_max)
@@ -164,13 +168,14 @@ def get_trees_in_area():
             "error": str(e)
         }), 500
 
+
 # ============================================
-# ENDPOINTS DE IMÁGENES
+# ENDPOINTS DE IMAGENES
 # ============================================
 
 @api_bp.route('/images', methods=['GET'])
 def get_images():
-    """GET /api/images - Retorna todas las imágenes procesadas"""
+    """GET /api/images - Retorna todas las imagenes procesadas."""
     try:
         images = db.images.get_all_images()
         return jsonify({
@@ -184,13 +189,14 @@ def get_images():
             "error": str(e)
         }), 500
 
+
 # ============================================
-# ENDPOINTS DE ESTADÍSTICAS
+# ENDPOINTS DE ESTADISTICAS
 # ============================================
 
 @api_bp.route('/stats', methods=['GET'])
 def get_stats():
-    """GET /api/stats - Retorna estadísticas generales"""
+    """GET /api/stats - Retorna estadisticas generales."""
     try:
         stats = db.statistics.get_statistics()
         return jsonify({
@@ -203,13 +209,14 @@ def get_stats():
             "error": str(e)
         }), 500
 
+
 # ============================================
-# ENDPOINT DE INFORMACIÓN DEL API
+# ENDPOINT DE INFORMACION DEL API
 # ============================================
 
 @api_bp.route('/info', methods=['GET'])
 def api_info():
-    """GET /api/info - Información del API"""
+    """GET /api/info - Informacion general del API."""
     return jsonify({
         "message": "Tree Detection API",
         "version": "1.0",

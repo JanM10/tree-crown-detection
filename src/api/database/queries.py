@@ -6,7 +6,9 @@ class SpeciesQueries:
         self.db = db_connection
 
     def get_all_species(self):
-        """Obtener todas las especies con conteo de árboles"""
+        """
+        Obtener todas las especies con el conteo de arboles asociados.
+        """
         query = """
             SELECT 
                 s.species_id,
@@ -15,23 +17,28 @@ class SpeciesQueries:
                 s.average_height_m,
                 s.crown_diameter_m,
                 s.description,
-                COUNT(t.tree_id) as tree_count
+                COUNT(t.tree_id) AS tree_count
             FROM species s
             LEFT JOIN trees t ON s.species_id = t.species_id
             GROUP BY s.species_id
         """
         return self.db.execute_query(query)
 
+
 class TreeQueries:
     def __init__(self, db_connection: DatabaseConnection):
         self.db = db_connection
 
     def get_total_trees_count(self):
-        """Obtener conteo total de árboles"""
+        """
+        Obtener el conteo total de arboles.
+        """
         return self.db.execute_scalar("SELECT COUNT(*) FROM trees")
 
     def get_trees_paginated(self, page: int = 1, per_page: int = 50):
-        """Obtener árboles con paginación"""
+        """
+        Obtener una lista de arboles con paginacion.
+        """
         offset = (page - 1) * per_page
         total = self.get_total_trees_count()
         
@@ -59,13 +66,15 @@ class TreeQueries:
         }
 
     def get_tree_by_id(self, tree_id: int):
-        """Obtener un árbol específico por ID"""
+        """
+        Obtener un arbol especifico por su ID.
+        """
         query = """
             SELECT 
                 t.tree_id,
                 t.image_id,
                 t.species_id,
-                s.common_name as species_name,
+                s.common_name AS species_name,
                 s.scientific_name,
                 t.bbox_x_center,
                 t.bbox_y_center,
@@ -77,7 +86,7 @@ class TreeQueries:
                 t.estimated_height_m,
                 t.estimated_crown_diameter_m,
                 t.detection_date,
-                i.filename as source_image
+                i.filename AS source_image
             FROM trees t
             JOIN species s ON t.species_id = s.species_id
             JOIN images i ON t.image_id = i.image_id
@@ -87,14 +96,16 @@ class TreeQueries:
         return results[0] if results else None
 
     def get_trees_by_species(self, species_id: int, page: int = 1, per_page: int = 50):
-        """Obtener árboles por especie con paginación"""
+        """
+        Obtener arboles filtrados por especie con paginacion.
+        """
         offset = (page - 1) * per_page
         
-        # Contar total para esta especie
+        # Contar el total de arboles de esta especie
         count_query = "SELECT COUNT(*) FROM trees WHERE species_id = ?"
         total = self.db.execute_scalar(count_query, (species_id,))
         
-        # Obtener árboles
+        # Obtener los arboles de la especie
         query = """
             SELECT 
                 tree_id,
@@ -122,7 +133,9 @@ class TreeQueries:
         }
 
     def get_trees_in_area(self, lat_min: float, lat_max: float, lon_min: float, lon_max: float):
-        """Buscar árboles en un área GPS específica"""
+        """
+        Buscar arboles dentro de un area geografica especifica (por coordenadas GPS).
+        """
         query = """
             SELECT 
                 tree_id,
@@ -139,12 +152,15 @@ class TreeQueries:
         """
         return self.db.execute_query(query, (lat_min, lat_max, lon_min, lon_max))
 
+
 class ImageQueries:
     def __init__(self, db_connection: DatabaseConnection):
         self.db = db_connection
 
     def get_all_images(self):
-        """Obtener todas las imágenes procesadas"""
+        """
+        Obtener todas las imagenes procesadas, ordenadas por cantidad de arboles detectados.
+        """
         query = """
             SELECT 
                 image_id,
@@ -159,22 +175,25 @@ class ImageQueries:
         """
         return self.db.execute_query(query)
 
+
 class StatisticsQueries:
     def __init__(self, db_connection: DatabaseConnection):
         self.db = db_connection
 
     def get_statistics(self):
-        """Obtener estadísticas generales"""
+        """
+        Obtener estadisticas generales sobre arboles, imagenes y especies.
+        """
         # Totales
         total_trees = self.db.execute_scalar("SELECT COUNT(*) FROM trees")
         total_images = self.db.execute_scalar("SELECT COUNT(*) FROM images")
         
-        # Distribución por especie
+        # Distribucion por especie
         species_query = """
             SELECT 
                 s.common_name,
-                COUNT(t.tree_id) as count,
-                ROUND(AVG(t.detection_confidence) * 100, 2) as avg_confidence
+                COUNT(t.tree_id) AS count,
+                ROUND(AVG(t.detection_confidence) * 100, 2) AS avg_confidence
             FROM species s
             LEFT JOIN trees t ON s.species_id = t.species_id
             GROUP BY s.species_id
@@ -182,12 +201,12 @@ class StatisticsQueries:
         """
         species_distribution = self.db.execute_query(species_query)
         
-        # Estadísticas de confianza
+        # Estadisticas de confianza de deteccion
         confidence_query = """
             SELECT 
-                ROUND(AVG(detection_confidence) * 100, 2) as avg_confidence,
-                ROUND(MIN(detection_confidence) * 100, 2) as min_confidence,
-                ROUND(MAX(detection_confidence) * 100, 2) as max_confidence
+                ROUND(AVG(detection_confidence) * 100, 2) AS avg_confidence,
+                ROUND(MIN(detection_confidence) * 100, 2) AS min_confidence,
+                ROUND(MAX(detection_confidence) * 100, 2) AS max_confidence
             FROM trees
         """
         confidence_results = self.db.execute_query(confidence_query)

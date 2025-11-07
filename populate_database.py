@@ -4,26 +4,28 @@ import os
 from datetime import datetime
 
 def populate_sample_data():
-    """Insertar datos de ejemplo en la base de datos"""
+    """
+    Insertar datos de ejemplo en la base de datos.
+    """
     
     db_path = os.path.join(os.path.dirname(__file__), 'src', 'tree_detection.db')
     
     if not os.path.exists(db_path):
-        print(f"❌ No se encontró la base de datos en: {db_path}")
+        print(f"No se encontro la base de datos en: {db_path}")
         return
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
-    print("🌱 Insertando datos de ejemplo...")
+    print("Insertando datos de ejemplo...")
     
     try:
         # 1. Insertar especies
         species_data = [
-            (1, 'Roble', 'Quercus robur', 25.0, 15.0, 'Árbol de hoja caduca'),
-            (2, 'Pino', 'Pinus sylvestris', 30.0, 12.0, 'Conífera perenne'),
-            (3, 'Arce', 'Acer pseudoplatanus', 20.0, 10.0, 'Árbol ornamental'),
-            (4, 'Eucalipto', 'Eucalyptus globulus', 35.0, 18.0, 'Árbol de crecimiento rápido'),
+            (1, 'Roble', 'Quercus robur', 25.0, 15.0, 'Arbol de hoja caduca'),
+            (2, 'Pino', 'Pinus sylvestris', 30.0, 12.0, 'Conifera perenne'),
+            (3, 'Arce', 'Acer pseudoplatanus', 20.0, 10.0, 'Arbol ornamental'),
+            (4, 'Eucalipto', 'Eucalyptus globulus', 35.0, 18.0, 'Arbol de crecimiento rapido'),
             (5, 'Palmera', 'Phoenix dactylifera', 15.0, 8.0, 'Palmera ornamental')
         ]
         
@@ -33,9 +35,9 @@ def populate_sample_data():
         VALUES (?, ?, ?, ?, ?, ?)
         """, species_data)
         
-        print("   ✅ Especies insertadas")
+        print("   Especies insertadas correctamente.")
         
-        # 2. Insertar imágenes de ejemplo
+        # 2. Insertar imagenes de ejemplo
         images_data = [
             ('aerial_photo_001.jpg', 640, 640, 9.9350, -84.0900, 0.78, 5000, datetime.now().isoformat()),
             ('aerial_photo_002.jpg', 640, 640, 9.9360, -84.0910, 0.78, 4800, datetime.now().isoformat()),
@@ -48,14 +50,14 @@ def populate_sample_data():
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, images_data)
         
-        print("   ✅ Imágenes insertadas")
+        print("   Imagenes insertadas correctamente.")
         
-        # 3. Insertar árboles detectados (ejemplo)
+        # 3. Insertar arboles detectados (ejemplo)
         trees_data = []
-        image_ids = [1, 2, 3]  # IDs de las imágenes que acabamos de insertar
+        image_ids = [1, 2, 3]  # IDs de las imagenes recien insertadas
         
-        for i in range(50):  # Insertar 50 árboles de ejemplo
-            image_id = image_ids[i % 3]  # Rotar entre las 3 imágenes
+        for i in range(50):  # Insertar 50 arboles de ejemplo
+            image_id = image_ids[i % 3]  # Rotar entre las 3 imagenes
             species_id = (i % 5) + 1  # Rotar entre las 5 especies
             
             tree_data = (
@@ -65,7 +67,7 @@ def populate_sample_data():
                 0.1 + (i * 0.012),  # bbox_y_center  
                 0.08,               # bbox_width
                 0.09,               # bbox_height
-                9.9350 + (i * 0.0001),  # gps_lat
+                9.9350 + (i * 0.0001),   # gps_lat
                 -84.0900 - (i * 0.0001), # gps_lon
                 0.7 + (i * 0.005),  # detection_confidence (0.7-0.95)
                 20.0 + (i * 0.5),   # estimated_height_m
@@ -81,7 +83,7 @@ def populate_sample_data():
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, trees_data)
         
-        # 4. Actualizar conteo de árboles en imágenes
+        # 4. Actualizar conteo de arboles en imagenes
         for image_id in image_ids:
             cursor.execute("""
             UPDATE images 
@@ -92,9 +94,9 @@ def populate_sample_data():
             """, (image_id, image_id))
         
         conn.commit()
-        print("   ✅ Árboles insertados")
+        print("   Arboles insertados correctamente.")
         
-        # Mostrar estadísticas
+        # Mostrar estadisticas
         cursor.execute("SELECT COUNT(*) FROM trees")
         tree_count = cursor.fetchone()[0]
         
@@ -104,14 +106,14 @@ def populate_sample_data():
         cursor.execute("SELECT COUNT(*) FROM species")
         species_count = cursor.fetchone()[0]
         
-        print(f"\n📊 ESTADÍSTICAS FINALES:")
-        print(f"   - Árboles: {tree_count}")
-        print(f"   - Imágenes: {image_count}") 
+        print("\nESTADISTICAS FINALES:")
+        print(f"   - Arboles: {tree_count}")
+        print(f"   - Imagenes: {image_count}") 
         print(f"   - Especies: {species_count}")
         print(f"   - Base de datos: {db_path}")
         
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
         conn.rollback()
     finally:
         conn.close()
