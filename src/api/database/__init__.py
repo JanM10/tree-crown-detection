@@ -11,3 +11,11 @@ class DatabaseManager:
         self.trees = TreeQueries(self.connection)
         self.images = ImageQueries(self.connection)
         self.statistics = StatisticsQueries(self.connection)
+    
+    def execute_query(self, query: str, params: tuple = None) -> list:
+        """Ejecuta una consulta SQL y retorna los resultados"""
+        return self.connection.execute_query(query, params)
+    
+    def execute_scalar(self, query: str, params: tuple = None):
+        """Ejecuta una consulta SQL y retorna un único valor escalar"""
+        return self.connection.execute_scalar(query, params)

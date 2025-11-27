@@ -2,7 +2,9 @@
 import axios from 'axios';
 
 // URL de tu API en Render (CAMBIAR POR TU URL REAL)
-const API_BASE_URL = 'https://tree-detection-api-tr4w.onrender.com';
+const API_BASE_URL = 'http://localhost:5000'; // ← Local
+// const API_BASE_URL = 'https://tree-detection-api-tr4w.onrender.com'; // ← Render
+//const API_BASE_URL = 'https://tree-detection-api-tr4w.onrender.com';
 
 // Crear instancia de axios con configuración base
 const api = axios.create({
@@ -130,6 +132,64 @@ export const getImages = async () => {
 };
 
 /**
+ * Obtener imagen en formato base64 (data URL)
+ * @param {number} imageId - ID de la imagen
+ */
+export const getImageBase64 = async (imageId) => {
+  try {
+    const response = await api.get(`/api/images/${imageId}/base64`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting image base64:', error);
+    throw error;
+  }
+};
+
+/**
+ * Obtener detecciones de una imagen específica
+ * @param {number} imageId - ID de la imagen
+ */
+export const getImageDetections = async (imageId) => {
+  try {
+    const response = await api.get(`/api/images/${imageId}/detections`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting image detections:', error);
+    throw error;
+  }
+};
+
+/**
+ * Obtener imagen original como archivo (para descarga)
+ * @param {number} imageId - ID de la imagen
+ */
+export const getImageFile = async (imageId) => {
+  try {
+    const response = await api.get(`/api/images/${imageId}`, {
+      responseType: 'blob' // Importante para archivos binarios
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error getting image file:', error);
+    throw error;
+  }
+};
+
+/**
+ * Obtener imágenes filtradas por especie
+ * @param {number} speciesId - ID de la especie
+ */
+export const getImagesBySpecies = async (speciesId) => {
+  try {
+    const response = await api.get(`/api/images/species/${speciesId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting images by species:', error);
+    throw error;
+  }
+};
+
+/**
  * Buscar árboles en un área GPS
  * @param {Object} bounds - { lat_min, lat_max, lon_min, lon_max }
  */
@@ -142,6 +202,50 @@ export const getTreesInArea = async (bounds) => {
   } catch (error) {
     console.error('Error getting trees in area:', error);
     throw error;
+  }
+};
+
+// ============================================
+// FUNCIONES DE UTILIDAD PARA IMÁGENES
+// ============================================
+
+/**
+ * Descargar una imagen
+ * @param {number} imageId - ID de la imagen
+ * @param {string} filename - Nombre del archivo
+ */
+export const downloadImage = async (imageId, filename = 'image.jpg') => {
+  try {
+    const blob = await getImageFile(imageId);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error downloading image:', error);
+    throw error;
+  }
+};
+
+/**
+ * Función para probar la conexión con la API
+ */
+export const testConnection = async () => {
+  try {
+    const response = await api.get('/api/info');
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
   }
 };
 
