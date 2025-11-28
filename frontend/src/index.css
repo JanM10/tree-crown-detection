@@ -1,12 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* src/index.css */
+@import "tailwindcss";
 
-/* Reset de estilos para evitar conflictos */
+/* Reset AGGRESIVO */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 body {
@@ -14,12 +20,20 @@ body {
   background-color: #f8fafc;
 }
 
-/* Estilos personalizados para mejorar la apariencia */
-.glass-effect {
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.1);
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
-.shadow-custom {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+/* Estilos forzados de emergencia */
+.force-padding {
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+}
+
+@media (min-width: 768px) {
+  .force-padding {
+    padding-left: 4rem !important;
+    padding-right: 4rem !important;
+  }
 }

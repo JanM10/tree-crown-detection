@@ -2,9 +2,9 @@
 import axios from 'axios';
 
 // URL de tu API en Render (CAMBIAR POR TU URL REAL)
-const API_BASE_URL = 'http://localhost:5000'; // ← Local
-// const API_BASE_URL = 'https://tree-detection-api-tr4w.onrender.com'; // ← Render
-//const API_BASE_URL = 'https://tree-detection-api-tr4w.onrender.com';
+// const API_BASE_URL = 'http://localhost:5000'; // ← Local
+const API_BASE_URL = 'https://tree-detection-api-tr4w.onrender.com'; // ← Render
+
 
 // Crear instancia de axios con configuración base
 const api = axios.create({
